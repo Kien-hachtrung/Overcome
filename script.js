@@ -22,6 +22,16 @@ function getState() {
   catch { return { ...defaultState }; }
 }
 function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function resetFromExtension() {
+  const resetAt = new URLSearchParams(window.location.search).get('overcumReset');
+  if (!resetAt) return;
+  const state = getState();
+  state.streak = 0;
+  state.streakStarted = new Date(resetAt).toISOString();
+  state.lastActive = resetAt;
+  saveState(state);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
 function getForumPosts() {
   try { return JSON.parse(localStorage.getItem(FORUM_KEY) || 'null') || getDefaultForumPosts(); }
   catch { return getDefaultForumPosts(); }
@@ -163,6 +173,7 @@ function setupForum() {
 }
 
 setupLogo();
+resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
 setupForum();
