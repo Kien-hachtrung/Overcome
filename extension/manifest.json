@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "overcum site blocker",
+  "version": "1.0.0",
+  "description": "Closes blocked tabs so your overcum streak stays protected.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_title": "overcum blocker",
+    "default_popup": "popup.html"
+  }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Settings | overcum</title><link rel="icon" type="image/svg+xml" href="logo.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head>
+<body data-protected><header class="topbar"><a class="brand" href="dashboard.html"><img class="brand-mark" src="logo.svg" alt=""> overcum</a><nav><a href="dashboard.html">Today</a><a href="leaderboard.html">Leaderboard</a><a class="active" href="settings.html">Settings</a></nav><button id="logoutButton" class="avatar">A</button></header><main class="settings-shell"><section class="page-intro"><div><p class="eyebrow">YOUR RULES</p><h1>Settings</h1><p>Shape the environment that supports your streak.</p></div></section><section class="settings-layout"><article class="settings-panel"><div class="panel-title"><div><p class="eyebrow">DISTRACTION GUARD</p><h2>Reset sites</h2></div><span class="focus-icon">⌁</span></div><p class="setting-copy">When you open a saved domain, overcum notices and resets your current streak. Add the places you want to stay away from.</p><form id="siteForm" class="site-form"><input id="siteInput" type="text" placeholder="youtube.com" aria-label="Website domain" required><button class="button button-primary" type="submit">Add site <span>+</span></button></form><p id="siteMessage" class="form-message" role="status"></p><div id="siteList" class="site-list"></div></article><article class="profile-panel"><p class="eyebrow">PROFILE</p><div class="profile-avatar" id="profileAvatar">A</div><h2 id="profileName">Account</h2><p id="profileEmail">you@example.com</p><div class="profile-stat"><span>Member since</span><strong id="memberSince">Today</strong></div></article></section></main><script src="script.js"></script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBJI_B4_v90xm8PRlBw23-yAQn1rrZhusc",
+    authDomain: "overcum-c461e.firebaseapp.com",
+    projectId: "overcum-c461e",
+    storageBucket: "overcum-c461e.firebasestorage.app",
+    messagingSenderId: "561108732700",
+    appId: "1:561108732700:web:a65af1e4acf2d95e3d08d9",
+    measurementId: "G-X6XH3J8VCB"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>

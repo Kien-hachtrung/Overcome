@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join overcum</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+  <main class="auth-layout">
+    <section class="auth-hero"><a class="brand" href="index.html"><img class="brand-mark" src="logo.svg" alt=""> overcum</a><div class="hero-copy"><p class="eyebrow">A NEW STANDARD</p><h1>Start where<br><em>you stand.</em></h1><p class="hero-text">Small decisions compound. Give yours a place to count.</p></div><div class="hero-footer"><span class="pulse-dot"></span> Private by design</div></section>
+    <section class="auth-panel"><div class="auth-card"><div class="auth-heading"><p class="eyebrow">CREATE YOUR SPACE</p><h2>Join overcum</h2><p>Your next chapter starts with one honest promise.</p></div>
+      <form id="signupForm" class="form-stack"><label>Name<input id="signupName" type="text" placeholder="What should we call you?" required></label><label>Email<input id="signupEmail" type="email" placeholder="you@example.com" required></label><label>Password<input id="signupPassword" type="password" minlength="6" placeholder="At least 6 characters" required></label><button class="button button-primary" type="submit">Create my space <span>↗</span></button><p id="signupMessage" class="form-message" role="status"></p></form>
+      <div class="auth-switch">Already have an account? <a href="index.html">Log in</a></div></div><p class="legal-note">Your demo account is stored locally as JSON in this browser.</p></section>
+  </main><script src="script.js"></script>
+
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBJI_B4_v90xm8PRlBw23-yAQn1rrZhusc",
+    authDomain: "overcum-c461e.firebaseapp.com",
+    projectId: "overcum-c461e",
+    storageBucket: "overcum-c461e.firebasestorage.app",
+    messagingSenderId: "561108732700",
+    appId: "1:561108732700:web:a65af1e4acf2d95e3d08d9",
+    measurementId: "G-X6XH3J8VCB"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>

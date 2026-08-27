@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title desc">
+  <title id="title">overcum logo</title>
+  <desc id="desc">Neon green crossed circle with two footprints</desc>
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="#d9f36b" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <circle cx="50" cy="50" r="38" stroke-width="7"/>
+    <path d="M23 23 77 77" stroke-width="7"/>
+  </g>
+  <g fill="#d9f36b" transform="rotate(42 50 50)" filter="url(#glow)">
+    <path d="M50 18c-7 0-12 8-12 17 0 10 5 17 12 17s12-7 12-17c0-9-5-17-12-17Z"/>
+    <path d="M50 48c-7 0-12 8-12 17 0 10 5 17 12 17s12-7 12-17c0-9-5-17-12-17Z"/>
+  </g>
+  <g fill="#101211" transform="rotate(42 50 50)">
+    <ellipse cx="45" cy="27" rx="4" ry="6"/><ellipse cx="56" cy="24" rx="3" ry="5"/>
+    <ellipse cx="44" cy="39" rx="4" ry="5"/><ellipse cx="55" cy="39" rx="3" ry="5"/>
+    <ellipse cx="45" cy="57" rx="4" ry="6"/><ellipse cx="56" cy="54" rx="3" ry="5"/>
+    <ellipse cx="44" cy="69" rx="4" ry="5"/><ellipse cx="55" cy="69" rx="3" ry="5"/>
+  </g>
+</svg>
