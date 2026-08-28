@@ -151,7 +151,7 @@ function setupHelpForm() {
     const button = form.querySelector('button'); const message = document.querySelector('#helpMessage');
     button.disabled = true; button.innerHTML = 'Sending...'; message.textContent = '';
     try {
-      await window.emailjs.sendForm('service_suihl4f', 'template_l90342r', form);
+      await window.emailjs.sendForm('service_b17x3rz', 'template_l3r6avl', form);
       form.reset();
       document.querySelector('#helpName').value = state.user?.name || 'overcum member';
       document.querySelector('#helpReply').value = state.user?.email || '';
@@ -197,5 +197,5 @@ resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
 setupForum();
-if (window.emailjs) window.emailjs.init({ publicKey: 'UKjn-PB11nGA9jtYg' });
+if (window.emailjs) window.emailjs.init({ publicKey: 'eDArlprS1yvQKj-uy' });
 setupHelpForm();
