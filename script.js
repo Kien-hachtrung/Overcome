@@ -141,6 +141,26 @@ function setupDashboard() {
   document.querySelector('#newQuote').addEventListener('click', () => { state.quoteIndex = (state.quoteIndex + 1) % state.quotes.length; saveState(state); renderQuote(state); });
   document.querySelector('#resetStreak').addEventListener('click', () => { window.clearInterval(streakTimer); state.streak = 0; state.streakStarted = new Date().toISOString(); saveState(state); setupDashboard(); });
 }
+function setupHelpForm() {
+  const form = document.querySelector('#helpForm'); if (!form || !window.emailjs) return;
+  const state = getState();
+  document.querySelector('#helpName').value = state.user?.name || 'overcum member';
+  document.querySelector('#helpReply').value = state.user?.email || '';
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = form.querySelector('button'); const message = document.querySelector('#helpMessage');
+    button.disabled = true; button.innerHTML = 'Sending...'; message.textContent = '';
+    try {
+      await window.emailjs.sendForm('service_ax27ffe', 'template_l90342r', form);
+      form.reset();
+      document.querySelector('#helpName').value = state.user?.name || 'overcum member';
+      document.querySelector('#helpReply').value = state.user?.email || '';
+      message.textContent = 'Your message was sent. We will get back to you soon.';
+    } catch (error) {
+      message.textContent = 'Message could not be sent. Please try again.';
+    } finally { button.disabled = false; button.innerHTML = 'Send help email <span>↗</span>'; }
+  });
+}
 function renderQuote(state) { const quote = state.quotes[state.quoteIndex]; document.querySelector('#quoteText').textContent = quote[0]; document.querySelector('#quoteAuthor').textContent = `— ${quote[1]}`; }
 
 function setupSettings() {
@@ -177,3 +197,5 @@ resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
 setupForum();
+if (window.emailjs) window.emailjs.init({ publicKey: 'UKjn-PB11nGA9jtYg' });
+setupHelpForm();

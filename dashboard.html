@@ -10,7 +10,8 @@
       <article class="video-panel"><div class="video-heading"><div><p class="eyebrow">TODAY'S PUSH</p><h3>Do the hard thing.</h3></div><span class="video-label">DAVID GOGGINS</span></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/78I9dTB9vqM" title="David Goggins motivational video" allowfullscreen></iframe></div></article>
     </section>
     <section class="today-forum"><div class="section-heading"><div><p class="eyebrow">FROM THE COMMUNITY</p><h2>Small wins, shared.</h2></div><a class="button button-secondary" href="forum.html">Open forum <span>→</span></a></div><div id="forumFeed" class="forum-feed"></div></section>
-  </main><script src="script.js"></script>
+    <section class="help-panel"><div class="section-heading"><div><p class="eyebrow">SUPPORT</p><h2>Need a hand?</h2><p>Send a private message to the overcum team.</p></div></div><form id="helpForm" class="help-form"><input type="hidden" name="from_name" id="helpName"><input type="hidden" name="reply_to" id="helpReply"><label>Subject<input type="text" name="subject" placeholder="What can we help with?" required></label><label>Message<textarea name="message" placeholder="Tell us what is going on..." maxlength="1500" required></textarea></label><div class="help-submit"><button class="button button-primary" type="submit">Send help email <span>↗</span></button><p id="helpMessage" class="form-message" role="status"></p></div></form></section>
+  </main><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script><script src="script.js"></script>
 
   <script type="module">
   // Import the functions you need from the SDKs you need
