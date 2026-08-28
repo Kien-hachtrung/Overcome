@@ -51,6 +51,10 @@ function requireLogin() { if (!getState().loggedIn) window.location.href = 'inde
 function getStreakDays(state) {
   return state.streakStarted ? Math.max(0, Math.floor((Date.now() - new Date(state.streakStarted).getTime()) / 86400000)) : 0;
 }
+function getStreakDuration(state) {
+  const totalMinutes = state.streakStarted ? Math.max(0, Math.floor((Date.now() - new Date(state.streakStarted).getTime()) / 60000)) : 0;
+  return `${Math.floor(totalMinutes / 1440)}d ${Math.floor((totalMinutes % 1440) / 60)}h ${totalMinutes % 60}m`;
+}
 function setupLogo() {
   document.querySelectorAll('.brand-mark').forEach(mark => {
     if (mark.tagName === 'IMG') return;
@@ -86,6 +90,7 @@ function setupAuth() {
   const state = getState();
   const loginForm = document.querySelector('#loginForm');
   const signupForm = document.querySelector('#signupForm');
+  if (state.loggedIn && loginForm) { window.location.href = 'dashboard.html'; return; }
   if (loginForm) loginForm.addEventListener('submit', event => {
     event.preventDefault();
     const email = document.querySelector('#loginEmail').value.trim().toLowerCase();
@@ -107,6 +112,12 @@ function setupAuth() {
 function setupShared() {
   const state = getState();
   if (document.body.dataset.protected) requireLogin();
+  const headerLogout = document.querySelector('.topbar #logoutButton');
+  if (headerLogout) {
+    const profileLink = document.createElement('a');
+    profileLink.className = 'avatar'; profileLink.href = 'settings.html'; profileLink.setAttribute('aria-label', 'Open settings'); profileLink.textContent = headerLogout.textContent;
+    headerLogout.replaceWith(profileLink);
+  }
   const navigation = document.querySelector('.topbar nav');
   if (navigation && !navigation.querySelector('a[href="forum.html"]')) {
     const forumLink = document.createElement('a');
@@ -116,25 +127,37 @@ function setupShared() {
   }
   document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', () => { state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
   const avatar = initials(state.user?.name);
-  document.querySelectorAll('.avatar, #profileAvatar').forEach(element => element.textContent = avatar);
+  document.querySelectorAll('.avatar, #profileAvatar, #accountAvatar').forEach(element => {
+    element.textContent = avatar;
+    if (element.id !== 'logoutButton') element.addEventListener('click', () => { window.location.href = 'settings.html'; });
+  });
   const name = document.querySelector('#profileName'); if (name) name.textContent = state.user?.name || 'Account';
   const email = document.querySelector('#profileEmail'); if (email) email.textContent = state.user?.email || '';
   const joined = document.querySelector('#memberSince'); if (joined) joined.textContent = dateLabel(state.user?.joined);
+  const profilePanel = document.querySelector('.profile-panel');
+  if (profilePanel && !document.querySelector('#logoutButton')) {
+    const logout = document.createElement('button'); logout.id = 'logoutButton'; logout.className = 'button button-secondary settings-logout'; logout.type = 'button'; logout.innerHTML = 'Log out <span>↗</span>'; profilePanel.appendChild(logout);
+  }
+  document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', () => { state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
 }
 
 function setupDashboard() {
   const count = document.querySelector('#streakCount'); if (!count) return;
   const state = getState();
   if (!state.streakStarted) { state.streakStarted = new Date().toISOString(); saveState(state); }
+  let detailed = false;
   const updateStreak = () => {
     const days = getStreakDays(state);
     state.streak = days;
-    count.textContent = days;
-    document.querySelector('#headerStreak').textContent = days;
+    count.textContent = detailed ? getStreakDuration(state) : days;
+    document.querySelector('#streakCount + small').textContent = detailed ? '' : 'days';
+    document.querySelector('#headerStreak').textContent = detailed ? getStreakDuration(state) : days;
+    document.querySelector('#headerStreakUnit').textContent = detailed ? '' : 'day streak';
     document.querySelector('#streakFill').style.width = `${Math.min((days / 90) * 100, 100)}%`;
   };
   updateStreak();
   const streakTimer = window.setInterval(updateStreak, 1000);
+  [count, document.querySelector('#headerStreak')].forEach(element => element?.addEventListener('click', () => { detailed = !detailed; updateStreak(); }));
   document.querySelector('#startDate').textContent = dateLabel(state.streakStarted);
   const hour = new Date().getHours(); document.querySelector('#greeting').textContent = hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.';
   renderQuote(state);
@@ -191,11 +214,21 @@ function setupForum() {
   const postForm = document.querySelector('#postForm');
   if (postForm) postForm.addEventListener('submit', event => { event.preventDefault(); const text = document.querySelector('#postText').value.trim(); const file = document.querySelector('#postImage').files[0]; const addPost = image => { posts.unshift({ id: `post-${Date.now()}`, name: state.user?.name || 'You', time: 'Just now', avatar: initials(state.user?.name), text, image, likes: 0, liked: false, saved: false, comments: [] }); saveForumPosts(posts); event.target.reset(); document.querySelector('#postComposer').hidden = true; render(); }; if (file) { const reader = new FileReader(); reader.onload = () => addPost(reader.result); reader.readAsDataURL(file); } else addPost(''); });
 }
+function setupPostComposer() {
+  const button = document.querySelector('#newPostButton');
+  const composer = document.querySelector('#postComposer');
+  if (!button || !composer) return;
+  button.addEventListener('click', () => {
+    composer.hidden = !composer.hidden;
+    if (!composer.hidden) document.querySelector('#postText')?.focus();
+  });
+}
 
 setupLogo();
+setupPostComposer();
 resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
-setupForum();
+if (!document.querySelector('#forumFeed')) setupForum();
 if (window.emailjs) window.emailjs.init({ publicKey: 'eDArlprS1yvQKj-uy' });
 setupHelpForm();

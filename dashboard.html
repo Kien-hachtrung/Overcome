@@ -2,39 +2,16 @@
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard | overcum</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head>
 <body data-protected>
-  <header class="topbar"><a class="brand" href="dashboard.html"><img class="brand-mark" src="logo.svg" alt=""> overcum</a><nav><a class="active" href="dashboard.html">Today</a><a href="leaderboard.html">Leaderboard</a><a href="settings.html">Settings</a></nav><button id="logoutButton" class="avatar" aria-label="Log out">A</button></header>
-  <main class="dashboard-shell"><section class="page-intro"><div><p class="eyebrow">THURSDAY, 27 AUGUST 2026</p><h1 id="greeting">Good evening.</h1><p>Keep the promise you made to yourself.</p></div><div class="streak-chip"><span class="pulse-dot"></span><strong id="headerStreak">0</strong> day streak</div></section>
+  <header class="topbar"><a class="brand" href="dashboard.html"><img class="brand-mark" src="logo.svg" alt=""> overcum</a><nav><a class="active" href="dashboard.html">Today</a><a href="forum.html">Forum</a><a href="leaderboard.html">Leaderboard</a><a href="settings.html">Settings</a></nav><a class="avatar" href="settings.html" aria-label="Open settings">A</a></header>
+  <main class="dashboard-shell"><section class="page-intro"><div><p class="eyebrow">THURSDAY, 27 AUGUST 2026</p><h1 id="greeting">Good evening.</h1><p>Keep the promise you made to yourself.</p></div><div class="streak-chip"><span class="pulse-dot"></span><strong id="headerStreak">0</strong> <span id="headerStreakUnit">day streak</span></div></section>
     <section class="dashboard-grid"><article class="streak-panel"><div class="panel-top"><div><p class="eyebrow">CURRENT STREAK</p><h2><span id="streakCount">0</span> <small>days</small></h2></div><span class="trend">↗ building</span></div><div class="streak-track"><div id="streakFill"></div></div><div class="track-labels"><span>STARTED <b id="startDate">TODAY</b></span><span>GOAL <b>90 DAYS</b></span></div><button id="resetStreak" class="text-button">Reset streak <span>↻</span></button></article>
       <article class="quote-panel"><span class="quote-mark">“</span><blockquote id="quoteText">We do not rise to the level of our goals. We fall to the level of our systems.</blockquote><p id="quoteAuthor">— James Clear</p><button id="newQuote" class="icon-button" aria-label="Show another quote" title="Show another quote">↻</button></article>
       <article class="focus-panel"><div class="panel-top"><div><p class="eyebrow">YOUR FOCUS</p><h3>Protect your attention.</h3></div><span class="focus-icon">◒</span></div><p>Add websites that pull you away from your promise. If you visit one, your streak resets automatically.</p><a class="button button-secondary" href="settings.html">Manage blocked sites <span>→</span></a></article>
       <article class="video-panel"><div class="video-heading"><div><p class="eyebrow">TODAY'S PUSH</p><h3>Do the hard thing.</h3></div><span class="video-label">DAVID GOGGINS</span></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/78I9dTB9vqM" title="David Goggins motivational video" allowfullscreen></iframe></div></article>
-    </section>
+    </section><aside class="account-panel"><p class="eyebrow">YOUR ACCOUNT</p><div class="account-avatar" id="accountAvatar">A</div><h2 id="accountName">Account</h2><p id="accountEmail">you@example.com</p><div class="account-stats"><div><strong id="accountDays">0</strong><span>total days</span></div><div><strong id="accountComments">0</strong><span>comments</span></div></div><div class="account-highlight"><span>MOST LIKED POST</span><p id="mostLikedPost">No posts yet</p><strong id="mostLikedCount">0 likes</strong></div></aside>
     <section class="today-forum"><div class="section-heading"><div><p class="eyebrow">FROM THE COMMUNITY</p><h2>Small wins, shared.</h2></div><a class="button button-secondary" href="forum.html">Open forum <span>→</span></a></div><div id="forumFeed" class="forum-feed"></div></section>
     <section class="help-panel"><div class="section-heading"><div><p class="eyebrow">SUPPORT</p><h2>Need a hand?</h2><p>Send a private message to the overcum team.</p></div></div><form id="helpForm" class="help-form"><input type="hidden" name="from_name" id="helpName"><input type="hidden" name="reply_to" id="helpReply"><label>Subject<input type="text" name="subject" placeholder="What can we help with?" required></label><label>Message<textarea name="message" placeholder="Tell us what is going on..." maxlength="1500" required></textarea></label><div class="help-submit"><button class="button button-primary" type="submit">Send help email <span>↗</span></button><p id="helpMessage" class="form-message" role="status"></p></div></form></section>
-  </main><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script><script src="script.js"></script>
+  </main><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script><script src="script.js"></script><script type="module" src="realtime-forum.js"></script>
 
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBJI_B4_v90xm8PRlBw23-yAQn1rrZhusc",
-    authDomain: "overcum-c461e.firebaseapp.com",
-    projectId: "overcum-c461e",
-    storageBucket: "overcum-c461e.firebasestorage.app",
-    messagingSenderId: "561108732700",
-    appId: "1:561108732700:web:a65af1e4acf2d95e3d08d9",
-    measurementId: "G-X6XH3J8VCB"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </body>
 </html>
