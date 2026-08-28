@@ -278,6 +278,7 @@ resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
 setupEmergency();
+if (document.body?.hasAttribute('data-protected')) import('./firebase-auth.js');
 if (!document.querySelector('#forumFeed')) setupForum();
 if (window.emailjs) window.emailjs.init({ publicKey: 'eDArlprS1yvQKj-uy' });
 setupHelpForm();
