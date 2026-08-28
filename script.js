@@ -14,7 +14,10 @@ const defaultState = {
     ['You have power over your mind, not outside events.', 'Marcus Aurelius'],
     ['One day or day one. You decide.', 'Paulo Coelho']
   ],
-  quoteIndex: 0
+  quoteIndex: 0,
+  emergencyReminder: '',
+  emergencyVoice: '',
+  nightGuard: false
 };
 
 function getState() {
@@ -164,6 +167,51 @@ function setupDashboard() {
   document.querySelector('#newQuote').addEventListener('click', () => { state.quoteIndex = (state.quoteIndex + 1) % state.quotes.length; saveState(state); renderQuote(state); });
   document.querySelector('#resetStreak').addEventListener('click', () => { window.clearInterval(streakTimer); state.streak = 0; state.streakStarted = new Date().toISOString(); saveState(state); setupDashboard(); });
 }
+function setupEmergency() {
+  const panicButton = document.querySelector('#panicButton');
+  const overlay = document.querySelector('#emergencyOverlay');
+  const activity = document.querySelector('#emergencyActivity');
+  if (!panicButton || !overlay || !activity) return;
+  const state = getState();
+  let timer;
+  let recorder;
+  let audioChunks = [];
+  const clearTimer = () => { if (timer) window.clearInterval(timer); timer = null; };
+  const close = () => { clearTimer(); overlay.hidden = true; document.body.classList.remove('modal-open'); activity.hidden = true; activity.innerHTML = ''; };
+  const showActivity = content => { clearTimer(); activity.innerHTML = content; activity.hidden = false; activity.scrollIntoView({ block: 'nearest' }); };
+  const countdown = (seconds, onTick, onDone) => { let remaining = seconds; onTick(remaining); timer = window.setInterval(() => { remaining -= 1; onTick(remaining); if (remaining <= 0) { clearTimer(); onDone(); } }, 1000); };
+  const renderReminder = () => {
+    showActivity(`<div class="activity-heading"><span class="tool-icon">↺</span><div><h3>Why did you choose this?</h3><p>This is private and stays on this device.</p></div></div><textarea id="reminderText" maxlength="500" placeholder="Write a few honest words to your future self...">${escapeHtml(state.emergencyReminder || '')}</textarea><div class="activity-actions"><button id="saveReminder" class="button button-primary" type="button">Save reminder</button><button id="recordReminder" class="button button-secondary" type="button">${state.emergencyVoice ? 'Record again' : 'Record voice memo'}</button></div><audio id="reminderAudio" controls ${state.emergencyVoice ? `src="${state.emergencyVoice}"` : 'hidden'}></audio><p id="reminderStatus" class="form-message" role="status"></p>`);
+    document.querySelector('#saveReminder').addEventListener('click', () => { state.emergencyReminder = document.querySelector('#reminderText').value.trim(); saveState(state); document.querySelector('#reminderStatus').textContent = 'Saved. Come back to these words whenever you need them.'; });
+    document.querySelector('#recordReminder').addEventListener('click', async event => {
+      const status = document.querySelector('#reminderStatus');
+      if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { status.textContent = 'Voice recording is not available in this browser. Your written reminder still works.'; return; }
+      if (recorder?.state === 'recording') { recorder.stop(); event.target.textContent = 'Record voice memo'; return; }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = []; recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = recordingEvent => audioChunks.push(recordingEvent.data);
+        recorder.onstop = () => { stream.getTracks().forEach(track => track.stop()); const reader = new FileReader(); reader.onloadend = () => { state.emergencyVoice = reader.result; saveState(state); renderReminder(); }; reader.readAsDataURL(new Blob(audioChunks, { type: recorder.mimeType || 'audio/webm' })); };
+        recorder.start(); event.target.textContent = 'Stop recording'; status.textContent = 'Recording... tap stop when you are done.';
+      } catch { status.textContent = 'Microphone access was not granted. You can still write a reminder.'; }
+    });
+  };
+  const openTool = tool => {
+    if (tool === 'breathing') showActivity(`<div class="activity-heading"><span class="breath-orb"></span><div><h3 id="activityTitle">Breathe in</h3><p id="activityHint">Follow the pace. There is nothing else to solve right now.</p></div></div><div class="activity-timer" id="activityTimer">4</div><div class="breath-progress"><span id="breathProgress"></span></div>`), countdown(19, remaining => { const cycle = remaining % 19; const phase = cycle > 11 ? ['Breathe out', 8] : cycle > 4 ? ['Hold', 7] : ['Breathe in', 4]; document.querySelector('#activityTitle').textContent = phase[0]; document.querySelector('#activityTimer').textContent = phase[1]; document.querySelector('#breathProgress').style.width = `${((19 - cycle) / 19) * 100}%`; }, () => { document.querySelector('#activityTitle').textContent = 'Nice work.'; document.querySelector('#activityHint').textContent = 'Your body has had a chance to settle. You can stay here or close this.'; document.querySelector('#activityTimer').textContent = '✓'; });
+    if (tool === 'movement') showActivity(`<div class="activity-heading"><span class="tool-icon">↯</span><div><h3>Thirty seconds, your way</h3><p>Try pushups, a stretch, a brisk walk, or cold water on your hands.</p></div></div><div class="activity-timer" id="activityTimer">30</div><button id="startMovement" class="button button-primary" type="button">Start timer</button>`), document.querySelector('#startMovement').addEventListener('click', event => { event.disabled = true; event.textContent = 'Keep going'; countdown(30, remaining => { document.querySelector('#activityTimer').textContent = remaining; }, () => { document.querySelector('#activityTimer').textContent = 'Done'; event.textContent = 'That counts'; }); });
+    if (tool === 'puzzle') { const first = Math.floor(Math.random() * 8) + 2; const second = Math.floor(Math.random() * 8) + 2; showActivity(`<div class="activity-heading"><span class="tool-icon">＋</span><div><h3>Give your mind a small job</h3><p>Solve three quick sums, one at a time.</p></div></div><p class="puzzle-question">${first} × ${second} = ?</p><form id="puzzleForm" class="puzzle-form"><input id="puzzleAnswer" type="number" inputmode="numeric" aria-label="Puzzle answer" required><button class="button button-primary" type="submit">Check</button></form><p id="puzzleStatus" class="form-message" role="status"></p>`); document.querySelector('#puzzleForm').addEventListener('submit', event => { event.preventDefault(); const status = document.querySelector('#puzzleStatus'); status.textContent = Number(document.querySelector('#puzzleAnswer').value) === first * second ? 'Correct. Take one slow breath before you decide what is next.' : 'Not quite. Try it once more, no pressure.'; }); }
+    if (tool === 'reminder') renderReminder();
+  };
+  panicButton.addEventListener('click', () => { overlay.hidden = false; document.body.classList.add('modal-open'); document.querySelector('#closeEmergency').focus(); });
+  document.querySelector('#closeEmergency').addEventListener('click', close);
+  overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !overlay.hidden) close(); });
+  document.querySelectorAll('[data-emergency-tool]').forEach(button => button.addEventListener('click', () => openTool(button.dataset.emergencyTool)));
+  const guardToggle = document.querySelector('#nightGuardToggle'); guardToggle.checked = Boolean(state.nightGuard);
+  const checkNightGuard = () => { const hour = new Date().getHours(); if (!state.nightGuard || !window.Notification || Notification.permission !== 'granted' || (hour >= 7 && hour < 22) || sessionStorage.getItem('overcumNightGuardNotice') === new Date().toDateString()) return; sessionStorage.setItem('overcumNightGuardNotice', new Date().toDateString()); new Notification('A gentle night guard reminder', { body: 'Your phone can wait. Choose one small thing that helps you wind down.' }); };
+  checkNightGuard(); window.setInterval(checkNightGuard, 60000);
+  guardToggle.addEventListener('change', async () => { state.nightGuard = guardToggle.checked; saveState(state); if (state.nightGuard && 'Notification' in window && Notification.permission === 'default') await Notification.requestPermission(); if (state.nightGuard && window.Notification?.permission === 'granted') new Notification('Smart night guard is on', { body: 'A gentle reminder will appear when it is time to put your phone down.' }); });
+}
 function setupHelpForm() {
   const form = document.querySelector('#helpForm'); if (!form || !window.emailjs) return;
   const state = getState();
@@ -229,6 +277,7 @@ setupPostComposer();
 resetFromExtension();
 closeBlockedTab();
 setupAuth(); setupShared(); setupDashboard(); setupSettings(); setupLeaderboard();
+setupEmergency();
 if (!document.querySelector('#forumFeed')) setupForum();
 if (window.emailjs) window.emailjs.init({ publicKey: 'eDArlprS1yvQKj-uy' });
 setupHelpForm();
