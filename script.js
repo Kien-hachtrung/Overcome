@@ -151,7 +151,7 @@ function setupHelpForm() {
     const button = form.querySelector('button'); const message = document.querySelector('#helpMessage');
     button.disabled = true; button.innerHTML = 'Sending...'; message.textContent = '';
     try {
-      await window.emailjs.sendForm('service_ax27ffe', 'template_l90342r', form);
+      await window.emailjs.sendForm('service_suihl4f', 'template_l90342r', form);
       form.reset();
       document.querySelector('#helpName').value = state.user?.name || 'overcum member';
       document.querySelector('#helpReply').value = state.user?.email || '';
