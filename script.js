@@ -93,7 +93,7 @@ function setupAuth() {
   const state = getState();
   const loginForm = document.querySelector('#loginForm');
   const signupForm = document.querySelector('#signupForm');
-  if (state.loggedIn && loginForm) { window.location.href = 'dashboard.html'; return; }
+  if (state.loggedIn && loginForm && state.user?.provider !== 'google') { window.location.href = 'dashboard.html'; return; }
   if (loginForm) loginForm.addEventListener('submit', event => {
     event.preventDefault();
     const email = document.querySelector('#loginEmail').value.trim().toLowerCase();

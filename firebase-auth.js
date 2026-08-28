@@ -26,6 +26,14 @@ export async function getUserProfile(user) {
   return snapshot.exists() ? snapshot.data() : null;
 }
 async function routeFirebaseUser(user) {
+  if (user.isAnonymous && getLocalState().user?.provider === 'google') {
+    const state = getLocalState();
+    state.loggedIn = false;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    await signOut(auth);
+    window.location.href = 'index.html';
+    return;
+  }
   const profile = await getUserProfile(user);
   saveGoogleUser(user, profile || {});
   if (isOnboardingPage) {
@@ -76,14 +84,18 @@ if (onboardingForm) onboardingForm.addEventListener('submit', async event => {
   button.disabled = true; button.textContent = 'Saving...'; message.textContent = '';
   try {
     const user = auth.currentUser;
-    if (!user.providerData.some(providerData => providerData.providerId === 'password')) await linkWithCredential(user, EmailAuthProvider.credential(user.email, password));
-    const profile = { uid: user.uid, email: user.email || '', displayName: user.displayName || '', photoURL: user.photoURL || '', username, isProfileComplete: true, createdAt: serverTimestamp(), completedAt: serverTimestamp() };
-    await setDoc(doc(db, 'users', user.uid), profile, { merge: true });
+    const existingProfile = await getUserProfile(user);
+    const accountEmail = user.email || user.providerData.find(providerData => providerData.email)?.email || '';
+    if (!accountEmail) throw { code: 'auth/missing-email' };
+    if (!user.providerData.some(providerData => providerData.providerId === 'password')) await linkWithCredential(user, EmailAuthProvider.credential(accountEmail, password));
+    const profile = { uid: user.uid, email: accountEmail, displayName: user.displayName || '', photoURL: user.photoURL || '', username, isProfileComplete: true, completedAt: serverTimestamp() };
+    if (existingProfile) await setDoc(doc(db, 'users', user.uid), profile, { merge: true });
+    else await setDoc(doc(db, 'users', user.uid), { ...profile, createdAt: serverTimestamp() });
     saveGoogleUser(user, profile);
     window.location.href = 'dashboard.html';
   } catch (error) {
     console.error('Profile completion failed:', error);
-    message.textContent = error.code === 'auth/email-already-in-use' ? 'This account already has a password. Try signing in again.' : 'Your profile could not be saved. Please try again.';
+    message.textContent = error.code === 'auth/operation-not-allowed' ? 'Password setup is not enabled yet. In Firebase Console, enable Email/Password under Authentication > Sign-in method, then try again.' : error.code === 'auth/missing-email' ? 'Google did not provide an email for this session. Sign out, sign in with Google again, and retry.' : error.code === 'auth/email-already-in-use' ? 'This account already has a password. Try signing in again.' : 'Your profile could not be saved. Please try again.';
     button.disabled = false; button.textContent = 'Complete my profile ↗';
   }
 });

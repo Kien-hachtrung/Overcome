@@ -126,7 +126,7 @@ async function startRealtimeForum() {
   if (refreshButton) refreshButton.addEventListener('click', loadPosts);
   window.addEventListener('forum-refresh-request', loadPosts);
   try {
-    if (!auth.currentUser) await signInAnonymously(auth);
+    if (!auth.currentUser && !currentUser().uid) await signInAnonymously(auth);
     await loadPosts();
     const form = document.querySelector('#postForm');
     if (form) form.addEventListener('submit', async event => {
