@@ -1,19 +1,7 @@
-import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
+import { signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, doc, increment, arrayUnion, arrayRemove, runTransaction } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyBJI_B4_v90xm8PRlBw23-yAQn1rrZhusc',
-  authDomain: 'overcum-c461e.firebaseapp.com',
-  projectId: 'overcum-c461e',
-  storageBucket: 'overcum-c461e.firebasestorage.app',
-  messagingSenderId: '561108732700',
-  appId: '1:561108732700:web:a65af1e4acf2d95e3d08d9'
-};
-
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import { auth, db } from './firebase-config.js';
 const postsRef = collection(db, 'forumPosts');
 const pendingLikes = new Set();
 const pendingReplies = new Set();
@@ -138,7 +126,7 @@ async function startRealtimeForum() {
   if (refreshButton) refreshButton.addEventListener('click', loadPosts);
   window.addEventListener('forum-refresh-request', loadPosts);
   try {
-    await signInAnonymously(auth);
+    if (!auth.currentUser) await signInAnonymously(auth);
     await loadPosts();
     const form = document.querySelector('#postForm');
     if (form) form.addEventListener('submit', async event => {

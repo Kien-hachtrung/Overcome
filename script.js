@@ -128,7 +128,7 @@ function setupShared() {
     forumLink.textContent = 'Forum';
     navigation.insertBefore(forumLink, navigation.querySelector('a[href="leaderboard.html"]'));
   }
-  document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', () => { state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
+  document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', async event => { event.preventDefault(); try { if (window.overcumSignOut) await window.overcumSignOut(); else await import('./firebase-auth.js').then(module => module.signOutCurrentUser()); } catch (error) { console.error('Sign-out failed:', error); } state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
   const avatar = initials(state.user?.name);
   document.querySelectorAll('.avatar, #profileAvatar, #accountAvatar').forEach(element => {
     element.textContent = avatar;
@@ -141,7 +141,7 @@ function setupShared() {
   if (profilePanel && !document.querySelector('#logoutButton')) {
     const logout = document.createElement('button'); logout.id = 'logoutButton'; logout.className = 'button button-secondary settings-logout'; logout.type = 'button'; logout.innerHTML = 'Log out <span>↗</span>'; profilePanel.appendChild(logout);
   }
-  document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', () => { state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
+  document.querySelectorAll('#logoutButton').forEach(button => button.addEventListener('click', async event => { event.preventDefault(); try { if (window.overcumSignOut) await window.overcumSignOut(); else await import('./firebase-auth.js').then(module => module.signOutCurrentUser()); } catch (error) { console.error('Sign-out failed:', error); } state.loggedIn = false; saveState(state); window.location.href = 'index.html'; }));
 }
 
 function setupDashboard() {
